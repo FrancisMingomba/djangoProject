@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'models',
     'store',
-    'tags'
+    'tags', 
+    
+    
 ]
 
 MIDDLEWARE = [
@@ -89,10 +91,11 @@ WSGI_APPLICATION = 'djangoproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'djangoproject',
+        'NAME': 'django',
         'HOST': 'localhost',
         'USER': 'root',
         'PASSWORD': 'mypassword1'
+     
     }
 }
 

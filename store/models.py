@@ -7,6 +7,9 @@ class Promotion(models.Model):
 class Collection(models.Model):
     title = models.CharField(max_length=255)
     featured_product = models.ForeignKey('Product', on_delete=models.SET_NULL, null=True, related_name='+') 
+    
+    def __str__(self) ->  str:
+        return self.title
 
 class Product(models.Model):
     title = models.CharField(max_length=255)
@@ -16,7 +19,11 @@ class Product(models.Model):
     inventory = models.IntegerField()
     last_updated = models.DateTimeField(auto_now=True)
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
-    promotion = models.ManyToManyField(Promotion)
+    promotions = models.ManyToManyField(Promotion)
+    
+    def __str__(self) -> str:
+        return self.title
+    
  
 class Customer(models.Model):
     MEMBERSHIP_BRONZE = 'B'
@@ -33,7 +40,15 @@ class Customer(models.Model):
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=255)
     date_of_birth = models.DateField(null=True)
-    membership = models.CharField(max_length=1, choices=MEMBER_CHOICES, default='MEMBERSHIP_BRONZE')
+    membership = models.CharField(
+        max_length=1, choices=MEMBER_CHOICES, default='MEMBERSHIP_BRONZE')
+    
+    class Meta:
+        db_table = 'store_customerS'
+        indexes = [
+            models.Index(fields=['last_name', 'first_name'])
+        ]
+        
 
 class Order(models.Model):
     PAYMENT_STATUS_PENDING = 'P'
@@ -55,16 +70,18 @@ class Address(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
 
 class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField()
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
-    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+   
 
 class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True)
 
 class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField()
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+  
